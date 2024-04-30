@@ -3,6 +3,9 @@
 [![reference](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](https://pkg.go.dev/github.com/streamingfast/merger)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+> [!IMPORTANT]
+> The code has moved to [firehose-core](https://github.com/streamingfast/firehose-core/tree/develop/merger), this repository still exists in read-only form so that older dependencies still resolves correctly.
+
 The merger process is responsible for accumulating blocks from all
 forks visible by the pool of instrumented nodes, and builds the famous
 100-blocks files consumed by `bstream`'s _FileSource_ and may other
