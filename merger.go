@@ -17,6 +17,10 @@ package merger
 import (
 	"bytes"
 	"context"
+	"errors"
+	"os"
+
+	"cloud.google.com/go/storage"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -209,15 +213,17 @@ func (od *oneBlockFilesDeleter) Delete(files []string) {
 }
 
 func (od *oneBlockFilesDeleter) processDeletions() {
-	for {
-		file := <-od.toProcess
+	for file := range od.toProcess {
 
 		var err error
 		for i := 0; i < 3; i++ {
 			ctx, cancel := context.WithTimeout(context.Background(), DeleteObjectTimeout)
 			err = od.store.DeleteObject(ctx, file)
 			cancel()
-			if err == nil {
+			// A missing object already satisfies deletion. Preserve retries and
+			// warnings for permission, transport and other storage failures.
+			if err == nil || errors.Is(err, storage.ErrObjectNotExist) || errors.Is(err, dstore.ErrNotFound) || os.IsNotExist(err) {
+				err = nil
 				break
 			}
 			time.Sleep(time.Duration(100*i) * time.Millisecond)
